@@ -1,8 +1,8 @@
 package main
 
 import (
-	"TaasServer/internal/repository"
 	"TaasServer/internal/routes"
+	"TaasServer/pkg/utils"
 	"log"
 	"os"
 
@@ -20,7 +20,7 @@ func main() {
 		port = "8080"
 	}
 
-	db, err := repository.InitDB()
+	db, err := utils.InitDB()
 	if err != nil {
 		log.Fatal(err)
 	}

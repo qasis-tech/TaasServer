@@ -7,6 +7,17 @@ import (
 	"log"
 )
 
+func UpdateProfilePic(db *sql.DB, id uint, fileName string) error {
+	query := `UPDATE users SET ProfilePic = $1 WHERE id = $2`
+	_, err := db.Exec(query, fileName, id)
+	if err != nil {
+		log.Printf("update profile pic failed: %v", err)
+		return fmt.Errorf("update profile pic failed: %w", err)
+	}
+
+	return nil
+}
+
 func GetAllUsers(db *sql.DB) ([]*models.User, error) {
 	query := `SELECT id,username,email FROM users`
 	rows, err := db.Query(query)
@@ -34,7 +45,6 @@ func GetAllUsers(db *sql.DB) ([]*models.User, error) {
 
 func UpdateUser(db *sql.DB, user *models.User) (*models.User, error) {
 	query := `UPDATE users SET username = $1, email = $2 WHERE id = $3 `
-	log.Printf("%s %s %v 11111", user.Username, user.Email, user.ID)
 	_, err := db.Exec(query, user.Username, user.Email, user.ID)
 
 	if err != nil {
@@ -47,7 +57,6 @@ func GetUserByUserName(db *sql.DB, username string) (*models.User, error) {
 	query := `SELECT * FROM users WHERE username = $1`
 	user := &models.User{}
 	err := db.QueryRow(query, username).Scan(&user.ID, &user.Username, &user.Email, &user.Password, &user.CreatedAt, &user.UpdatedAt)
-	log.Printf("Result ==>", user)
 	if err != nil {
 		return nil, err
 	}
@@ -66,18 +75,20 @@ func GetUserById(db *sql.DB, id int) (*models.User, error) {
 
 func CreateUserRepo(db *sql.DB, user *models.User) error {
 	query := `
-        INSERT INTO users (username, password, email)
-        VALUES ($1, $2, $3)
-        RETURNING id, created_at, updated_at
+        INSERT INTO users (username, password, email, roles)
+        VALUES ($1, $2, $3, $4)
+		RETURNING id, created_at, updated_at
     `
 	err := db.QueryRow(
 		query,
 		user.Username,
 		user.Password,
 		user.Email,
-	).Scan(&user.ID, &user.CreatedAt, &user.UpdatedAt) // Scan the returned values
+		user.Roles,
+	).Scan(&user.ID, &user.CreatedAt, &user.UpdatedAt)
 
 	if err != nil {
+		log.Printf("Error Creating User %v", err)
 		return fmt.Errorf("failed to create user: %w", err)
 	}
 

@@ -6,6 +6,10 @@ import (
 	"database/sql"
 )
 
+func UpdateProfilePic(db *sql.DB, id uint, fileName string) error {
+	return repository.UpdateProfilePic(db, id, fileName)
+}
+
 func GetAllUsers(db *sql.DB) ([]*models.User, error) {
 	return repository.GetAllUsers(db)
 }

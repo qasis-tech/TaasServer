@@ -19,9 +19,6 @@ func AuthMiddleware() gin.HandlerFunc {
 			ctx.Abort()
 			return
 		}
-
-		log.Printf("Ping 1 %s", authHeader)
-
 		if !strings.HasPrefix(authHeader, "Bearer ") {
 			ctx.JSON(http.StatusUnauthorized, gin.H{
 				"error": "Authorization header must start with 'Bearer '",
@@ -37,7 +34,6 @@ func AuthMiddleware() gin.HandlerFunc {
 		log.Printf("tokenString ==> %s", tokenString)
 
 		claims, err := utils.ValidateToken(tokenString)
-		log.Printf("Validated %v", claims)
 
 		if err != nil {
 
@@ -47,9 +43,7 @@ func AuthMiddleware() gin.HandlerFunc {
 			ctx.Abort()
 			return
 		}
-
-		log.Printf("Before Set ==> %d", claims.UserId)
-
+ 
 		ctx.Set("userID", claims.UserId)
 		ctx.Set("userName", claims.Username)
 		ctx.Set("roles", claims.Role)

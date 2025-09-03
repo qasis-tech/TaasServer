@@ -17,5 +17,5 @@ func InitRoutes(r *gin.Engine, db *sql.DB) {
 	authenticated.GET("/users", handlers.GetAllUsers(db))
 	authenticated.GET("/users/:id", handlers.GetUserByIdHandler(db))
 	authenticated.PUT("/users/:id", handlers.UpdateUserProfile(db))
-	authenticated.PATCH("/users/:id/update-profile-pic", handlers.UpdateUserProfilePic(db))
+	authenticated.PUT("/users/:id/update-profile-pic", handlers.UpdateUserProfilePic(db))
 }
